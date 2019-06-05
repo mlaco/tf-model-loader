@@ -1,4 +1,4 @@
-const concatenateArrayBuffer = require("../lib/utils");
+const concatenateArrayBuffers = require(`${__dirname}/lib/utils`);
 const fs = require("fs");
 const path = require("path");
 
@@ -33,24 +33,27 @@ module.exports = async function(source) {
     const data = fs.readFileSync(`./model/${leafname}`);
     arrayBuffers.push(data);
   });
-  const weightDataBuffer = concatenateArrayBuffer(arrayBuffers);
+  const weightDataBuffer = concatenateArrayBuffers(arrayBuffers);
   const weightDataString64 = Buffer.from(weightDataBuffer).toString("base64");
 
   return JSON.stringify(`
-    function() {
-      const weightData = "${weightDataString64}"
+    {
+      load: function() {
+        const weightData = "${weightDataString64}"
 
-      const buf = Buffer.from(weightData, "base64");
-      const weightDataBuffer = buf.buffer.slice(
-        buf.byteOffset,
-        buf.byteOffset + buf.byteLength
-      );
+        const buf = Buffer.from(weightData, "base64");
+        const weightDataBuffer = buf.buffer.slice(
+          buf.byteOffset,
+          buf.byteOffset + buf.byteLength
+        );
 
-      return {
-        modelTopology: ${JSON.stringify(modelTopology)},
-        weightSpecs: ${JSON.stringify(weightSpecs)},
-        weightData: weightDataBuffer
+        return {
+          modelTopology: ${JSON.stringify(modelTopology)},
+          weightSpecs: ${JSON.stringify(weightSpecs)},
+          weightData: weightDataBuffer
+        }
       }
     }
+
   `);
 };
