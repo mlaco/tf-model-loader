@@ -1,6 +1,7 @@
 const concatenateArrayBuffers = require(`${__dirname}/lib/utils`);
 const fs = require("fs");
 const path = require("path");
+const Buffer = require("buffer").Buffer;
 
 module.exports = async function(source) {
   const modelConfig = JSON.parse(source);
@@ -37,11 +38,18 @@ module.exports = async function(source) {
   const weightDataString64 = Buffer.from(weightDataBuffer).toString("base64");
 
   return JSON.stringify(`
-    {
+    var modelLoader = {
       load: function() {
         const weightData = "${weightDataString64}"
 
-        const buf = Buffer.from(weightData, "base64");
+        //const buf = Buffer.from(weightData, "base64");
+
+        const preBuf = new ArrayBuffer(weightData.length*2)
+        const buf = new Uint16Array(preBuf)
+        for (var i=0, strLen=weightData.length; i < strLen; i++) {
+          buf[i] = weightData.charCodeAt(i);
+        }
+
         const weightDataBuffer = buf.buffer.slice(
           buf.byteOffset,
           buf.byteOffset + buf.byteLength
@@ -54,6 +62,5 @@ module.exports = async function(source) {
         }
       }
     }
-
   `);
 };
