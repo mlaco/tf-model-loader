@@ -1,14 +1,14 @@
 {
   "name": "tf-model-loader",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.1",
+  "description": "Enable Tensorflow model to be bundled with JS projects using Webpack",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Morgan Laco morganlaco@gmail.com (http://morganlaco.com)",
+  "license": "MIT",
   "devDependencies": {
     "webpack-cli": "^3.3.6"
   }
